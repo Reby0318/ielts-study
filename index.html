@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IELTS Study">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>IELTS Study</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+<style>
+:root{--ground:#F6F7F9;--surface:#fff;--ink:#16202B;--ink-2:#4E5D6C;--rule:#D7DEE6;--accent:#1C4E6B;--good:#2C6349;--good-soft:#E2F0E9}
+@media (prefers-color-scheme:dark){:root{--ground:#0B1016;--surface:#141C24;--ink:#E4ECF3;--ink-2:#A6B4C0;--rule:#2A3742;--accent:#82BEDD;--good:#84C6A2;--good-soft:#15291F}}
+*{box-sizing:border-box}body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",-apple-system,sans-serif;
+padding:max(28px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 40px max(20px,env(safe-area-inset-left))}
+main{max-width:760px;margin:0 auto}h1{font-family:"Newsreader",Georgia,serif;font-weight:500;font-size:2.2rem;margin:10px 0 6px}
+p{color:var(--ink-2);line-height:1.5}.cards{display:grid;gap:14px;margin:22px 0}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:20px 22px}
+a.card b{display:block;font-size:1.25rem;margin-bottom:4px}a.card span{color:var(--ink-2)}
+.off{border:1px solid var(--rule);border-radius:8px;padding:12px 14px;background:var(--surface);font-size:.95rem}
+.off.ok{border-color:var(--good);background:var(--good-soft)}
+</style>
+</head>
+<body><main>
+<h1>IELTS Study</h1>
+<p>Vocabulary and Study from your IELTS simulator, saved on this iPad so they work with no internet.</p>
+<div class="cards">
+<a class="card" href="vocab.html"><b>Vocabulary</b><span>Band 8–9 words and phrases: Speaking, Writing Task 1 and 2, Band 8–9, IELTS topics, paraphrasing and the Academic Word List. Flashcards, meaning quiz, spelling.</span></a>
+<a class="card" href="study.html"><b>Study: vocabulary &amp; writing</b><span>Word families with flashcards, quizzes and saved words, plus Task 1 and Task 2 guides with Band 9 models.</span></a>
+</div>
+<div class="off" id="off">Checking offline storage…</div>
+<p style="font-size:.85rem">Your progress is saved on this iPad. Claude's checking (“Use it”, Writing practice) needs internet and the Mac version.</p>
+<script>
+(function(){var o=document.getElementById('off');
+ function ok(){o.className='off ok';o.textContent='✓ Saved on this iPad: works offline, including on a plane.'}
+ if(!('serviceWorker' in navigator)){o.textContent='This browser cannot save the app for offline use.';return}
+ navigator.serviceWorker.ready.then(function(){return caches.keys()}).then(function(k){if(k.length)ok();else o.textContent='Saving for offline… keep this page open for a moment.'});
+ navigator.serviceWorker.addEventListener('message',function(e){if(e.data==='cached')ok()});
+})();
+</script>
+</main></body></html>
