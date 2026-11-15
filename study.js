@@ -397,9 +397,17 @@ const tModel = t => t.model.split(/\n\n/).map(p => "<p>" + hl(p, t.key) + "</p>"
 const tDone = () => { const d = {}; ST.hist.forEach(h => { if (h.kind === "trend") d[h.q] = h; }); return d; };
 function trends(arg) {
   const L = STUDY_TRENDS, done = tDone();
+  if (arg === "all") {
+    screen("Study · Trend charts", "All 20 with answers",
+      '<p class="eyebrow">Task 1</p><h1>All 20 charts with model answers</h1><p class="st-hint">Read each chart, say the overview to yourself, then read the model. The trend phrase is in bold.</p>' +
+      L.map((t, i) => '<div class="st-flash"><p class="eyebrow">' + (i + 1) + " / " + L.length + " · " + esc(t.key) + '</p><p class="st-qs">' + esc(t.q) + '</p><div class="st-chartbox">' + chartSvg(t) +
+        '</div><div class="st-better"><span>Band 9 model answer</span>' + tModel(t) + "</div></div>").join("") +
+      '<div class="btnrow"><button type="button" class="ghost" data-go="trends" data-arg="">All 20 charts</button></div>' + nav());
+    return;
+  }
   if (arg == null || arg === "" || isNaN(+arg)) {
     screen("Study · Trend charts", "Task 1",
-      '<p class="eyebrow">Task 1</p><h1>Trend charts</h1><p class="st-hint">20 graphs, one for each trend phrase. Look at the chart, write the answer (an introduction, an overview and the key details), then compare it with the Band 9 model. The charts and models work offline; "Check with Claude" needs the internet.</p>' +
+      '<p class="eyebrow">Task 1</p><h1>Trend charts</h1><div class="btnrow"><button type="button" data-go="trends" data-arg="all">📖 Read all 20 with answers</button></div><p class="st-hint">Or pick one chart to practise: 20 graphs, one for each trend phrase. Look at the chart, write the answer (an introduction, an overview and the key details), then compare it with the Band 9 model. The charts and models work offline; "Check with Claude" needs the internet.</p>' +
       '<div class="cards st-fams">' + L.map((t, i) => '<button type="button" class="card" data-go="trends" data-arg="' + i + '"><b>' + (i + 1) + ". " + esc(t.title) + "</b><span>Key phrase: " + esc(t.key) + '</span><span class="meta">' + (t.type === "bar" ? "Bar chart" : "Line graph") + (done[i] ? " · ✓ written" : "") + "</span></button>").join("") + "</div>" + nav());
     return;
   }
@@ -409,7 +417,9 @@ function trends(arg) {
     '<div class="st-flash"><p class="st-qs">' + esc(t.q) + ' Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p>' +
     '<p class="st-hint">Use this phrase: <b>' + esc(t.key) + "</b> · Aim for an introduction, an overview and 2–3 detail sentences (about 100–150 words).</p>" +
     '<div class="st-chartbox">' + chartSvg(t) + "</div>" +
+    '<details class="st-ans"><summary>📖 Band 9 model answer (tap to open)</summary>' + tModel(t) + "</details>" +
     "<details><summary>Show the exact figures</summary>" + tTable(t) + "</details>" +
+    '<p class="st-hint">Try writing it yourself first, then open the model answer above to compare.</p>' +
     '<textarea class="st-ta" rows="9" placeholder="Write your answer here">' + esc(done[i] ? done[i].text : "") + '</textarea><p class="st-wc">0 words</p>' +
     '<div class="btnrow"><button type="button" class="st-chk">Check with Claude</button><button type="button" class="ghost st-mod">Show the Band 9 model</button></div><div class="st-out"></div>' +
     '<div class="btnrow"><button type="button" class="ghost" data-go="trends" data-arg="' + (i - 1) + '">← Previous chart</button><button type="button" class="ghost" data-go="trends" data-arg="">All 20 charts</button><button type="button" data-go="trends" data-arg="' + (i + 1) + '">Next chart →</button></div></div>' + nav());
@@ -487,6 +497,9 @@ function css() {
 .stdy .st-chart .ct-g{stroke:var(--rule);stroke-width:1}
 .stdy .st-chart .ct-x{stroke:var(--ink-3);stroke-width:1.2}
 .stdy .st-better p{margin:0 0 .6em}.stdy .st-better p:last-child{margin:0}
+.stdy details.st-ans{border:1px solid var(--good);background:var(--good-soft);border-radius:5px;padding:8px 14px;margin:10px 0;font-family:"Newsreader",Georgia,serif;font-size:1.03rem;line-height:1.55}
+.stdy details.st-ans summary{font-family:"IBM Plex Sans",sans-serif;font-weight:600;color:var(--good);font-size:.98rem}
+.stdy details.st-ans p{margin:.6em 0 0}
 .stdy details summary{cursor:pointer;color:var(--accent);font-size:.92rem;margin:4px 0}
 .stdy .st-better{border:1px solid var(--good);background:var(--good-soft);border-radius:5px;padding:10px 14px;font-family:"Newsreader",Georgia,serif;font-size:1.03rem;line-height:1.55;color:var(--ink);max-width:760px}
 .stdy .st-better span{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--good);margin-bottom:4px}
