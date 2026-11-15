@@ -485,7 +485,7 @@ mark.ev.evflash{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent)
 @media (max-width:600px){.topbar a.tlink{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+<script>if('serviceWorker' in navigator){var hadSW=!!navigator.serviceWorker.controller,swR=0;navigator.serviceWorker.register('sw.js').then(function(r){r.update()});navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadSW&&!swR){swR=1;location.reload()}})}</script>
 <style>#app .topbar a{color:var(--chrome-ink);text-decoration:none;font-size:13px;border:1px solid #0006;background:var(--chrome-2);border-radius:4px;padding:5px 11px}</style>
 </head>
 <body>
@@ -496,8 +496,8 @@ mark.ev.evflash{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent)
   <div class="botbar" id="botbar" style="display:none"></div>
 </div>
 <script>window.IELTS_STUDY_BRIDGE={home:function(){location.href='index.html'},stopTimer:function(){}};</script>
-<script src="study-data.js"></script>
-<script src="study.js"></script>
+<script src="study-data.js?v=cb99684f"></script>
+<script src="study.js?v=cb99684f"></script>
 <script>if(window.STUDY)window.STUDY.open();</script>
 </body>
 </html>

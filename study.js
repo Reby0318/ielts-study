@@ -428,10 +428,10 @@ function trends(arg) {
   ta.oninput = count; count();
   const model = '<div class="st-better"><span>Band 9 model</span>' + tModel(t) + "</div>";
   const keep = () => { const v = ta.value.trim(); if (v && (!done[i] || done[i].text !== v)) { addHist({ kind: "trend", q: i, text: v }); done[i] = { text: v }; } };
-  d.querySelector(".st-mod").onclick = () => { keep(); out.innerHTML = model; };
+  d.querySelector(".st-mod").onclick = () => { out.innerHTML = model; out.scrollIntoView({ block: "nearest", behavior: "smooth" }); try { keep(); } catch (e) {} };
   d.querySelector(".st-chk").onclick = () => {
     const v = ta.value.trim(); if (!v) { ta.focus(); return; }
-    keep();
+    try { keep(); } catch (e) {}
     out.innerHTML = '<p class="st-hint">Claude is checking against the band descriptors…</p>';
     const data = t.series.map(s => s.name + ": " + t.x.map((x, k) => x + " " + tfmt(s.v[k])).join(", ")).join("\n");
     sampler().then(s => {

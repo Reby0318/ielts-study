@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>IELTS Study</title>
 <link rel="stylesheet" href="fonts/fonts.css">
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+<script>if('serviceWorker' in navigator){var hadSW=!!navigator.serviceWorker.controller,swR=0;navigator.serviceWorker.register('sw.js').then(function(r){r.update()});navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadSW&&!swR){swR=1;location.reload()}})}</script>
 <style>
 :root{--ground:#F6F7F9;--surface:#fff;--ink:#16202B;--ink-2:#4E5D6C;--rule:#D7DEE6;--accent:#1C4E6B;--good:#2C6349;--good-soft:#E2F0E9}
 @media (prefers-color-scheme:dark){:root{--ground:#0B1016;--surface:#141C24;--ink:#E4ECF3;--ink-2:#A6B4C0;--rule:#2A3742;--accent:#82BEDD;--good:#84C6A2;--good-soft:#15291F}}
