@@ -109,6 +109,7 @@ function home() {
     '<div class="tile"><span class="lab">Last quiz</span><span class="v">' + (last ? last.score + "/" + last.n : "–") + '</span><span class="s">' + (last ? esc(last.title) : "Take one below") + "</span></div></div>" +
     '<div class="cards"><button type="button" class="card" data-go="saved"><b>⭐ My saved words</b><span>Every word you marked, with flashcards and a quiz for a quick recap.</span><span class="meta">' + sv + " saved</span></button>" +
     '<button type="button" class="card" data-go="mixquiz"><b>Mixed quiz</b><span>10 questions from all the words. Wrong answers can go straight into your saved words.</span><span class="meta">About 5 minutes</span></button>' +
+    '<button type="button" class="card" data-go="trends"><b>📈 Trend charts</b><span>20 graphs to describe, one for each trend phrase, each with a Band 9 model answer.</span><span class="meta">Task 1 · works offline</span></button>' +
     '<button type="button" class="card" data-go="t1"><b>Task 1 guide</b><span>Structure, the overview, every chart type, a Band 9 model and a checklist.</span><span class="meta">Writing</span></button>' +
     '<button type="button" class="card" data-go="t2"><b>Task 2 guide</b><span>Five essay types, paragraph plan, linkers, Band 9 grammar and a model essay.</span><span class="meta">Writing</span></button>' +
     '<button type="button" class="card" data-go="practice"><b>Writing practice</b><span>Write an overview, a data sentence, an introduction or a body paragraph. Claude checks it.</span><span class="meta">With Claude</span></button>' +
@@ -352,7 +353,94 @@ function practice(kind) {
   show();
 }
 
-const ROUTES = { home, fam, saved, cards, quiz, mixquiz: () => quiz(""), use, t1, t2, rules, practice };
+/* ---------- Trend charts: 20 graphs with a Band 9 model answer each (STUDY_TRENDS) ---------- */
+const TCOL = ["var(--accent)", "var(--gold)", "var(--good)"], TDASH = ["", "7 4", "2 4"];
+const tfmt = v => String(+(+v).toFixed(2));
+function tstep(r) { const m = Math.pow(10, Math.floor(Math.log10(r))), f = r / m; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * m; }
+function chartSvg(t) {
+  const W = 640, H = 330, L = 50, R = 14, T = 58, B = 34, n = t.x.length;
+  const all = [].concat.apply([], t.series.map(s => s.v)), mx = Math.max.apply(null, all);
+  let lo = t.y0 != null ? t.y0 : 0; const st = tstep((mx - lo) / 5 || 1); lo = Math.floor(lo / st) * st;
+  const hi = Math.ceil(mx / st) * st + (mx % st === 0 ? 0 : 0), pw = W - L - R, ph = H - T - B;
+  const Y = v => T + ph - (v - lo) / (hi - lo) * ph;
+  const o = ['<svg class="st-chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(t.title) + '">'];
+  o.push('<text x="' + L + '" y="16" class="ct-t">' + esc(t.title) + '</text><text x="' + L + '" y="' + (T - 8) + '" class="ct-u">' + esc(t.unit) + "</text>");
+  let lx = W - R;
+  for (let k = t.series.length - 1; k >= 0; k--) {
+    const s = t.series[k], w = s.name.length * 6.6 + 30; lx -= w;
+    o.push(t.type === "bar" ? '<rect x="' + lx + '" y="25" width="14" height="10" fill="' + TCOL[k] + '"/>' :
+      '<line x1="' + lx + '" y1="30" x2="' + (lx + 18) + '" y2="30" stroke="' + TCOL[k] + '" stroke-width="2.6" stroke-dasharray="' + TDASH[k] + '"/>');
+    o.push('<text x="' + (lx + 22) + '" y="34" class="ct-l">' + esc(s.name) + "</text>");
+  }
+  for (let v = lo; v <= hi + 1e-9; v += st) o.push('<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" class="ct-g"/><text x="' + (L - 6) + '" y="' + (Y(v) + 4) + '" class="ct-a" text-anchor="end">' + tfmt(v) + "</text>");
+  if (t.type === "bar") {
+    const gw = pw / n, bw = Math.min(34, gw * 0.72 / t.series.length);
+    t.x.forEach((x, i) => {
+      const c = L + gw * (i + 0.5), x0 = c - bw * t.series.length / 2;
+      t.series.forEach((s, k) => o.push('<rect x="' + (x0 + k * bw) + '" y="' + Y(s.v[i]) + '" width="' + (bw - 2) + '" height="' + (Y(lo) - Y(s.v[i])) + '" fill="' + TCOL[k] + '"><title>' + esc(s.name + ", " + x + ": " + tfmt(s.v[i])) + "</title></rect>"));
+      o.push('<text x="' + c + '" y="' + (H - B + 18) + '" class="ct-a" text-anchor="middle">' + esc(x) + "</text>");
+    });
+  } else {
+    const X = i => L + 12 + i * (pw - 24) / (n - 1);
+    t.x.forEach((x, i) => o.push('<text x="' + X(i) + '" y="' + (H - B + 18) + '" class="ct-a" text-anchor="middle">' + esc(x) + "</text>"));
+    t.series.forEach((s, k) => {
+      o.push('<polyline fill="none" stroke="' + TCOL[k] + '" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="' + TDASH[k] + '" points="' + s.v.map((v, i) => X(i) + "," + Y(v)).join(" ") + '"/>');
+      s.v.forEach((v, i) => o.push('<circle cx="' + X(i) + '" cy="' + Y(v) + '" r="3.6" fill="' + TCOL[k] + '"><title>' + esc(s.name + ", " + t.x[i] + ": " + tfmt(v)) + "</title></circle>"));
+    });
+  }
+  o.push('<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(lo) + '" y2="' + Y(lo) + '" class="ct-x"/></svg>');
+  return o.join("");
+}
+const tTable = t => '<div class="tw"><table class="dtable"><thead><tr><th>' + esc(t.unit) + "</th>" + t.x.map(x => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>" +
+  t.series.map(s => "<tr><td><b>" + esc(s.name) + "</b></td>" + s.v.map(v => "<td>" + tfmt(v) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>";
+const tModel = t => t.model.split(/\n\n/).map(p => "<p>" + hl(p, t.key) + "</p>").join("");
+const tDone = () => { const d = {}; ST.hist.forEach(h => { if (h.kind === "trend") d[h.q] = h; }); return d; };
+function trends(arg) {
+  const L = STUDY_TRENDS, done = tDone();
+  if (arg == null || arg === "" || isNaN(+arg)) {
+    screen("Study · Trend charts", "Task 1",
+      '<p class="eyebrow">Task 1</p><h1>Trend charts</h1><p class="st-hint">20 graphs, one for each trend phrase. Look at the chart, write the answer (an introduction, an overview and the key details), then compare it with the Band 9 model. The charts and models work offline; "Check with Claude" needs the internet.</p>' +
+      '<div class="cards st-fams">' + L.map((t, i) => '<button type="button" class="card" data-go="trends" data-arg="' + i + '"><b>' + (i + 1) + ". " + esc(t.title) + "</b><span>Key phrase: " + esc(t.key) + '</span><span class="meta">' + (t.type === "bar" ? "Bar chart" : "Line graph") + (done[i] ? " · ✓ written" : "") + "</span></button>").join("") + "</div>" + nav());
+    return;
+  }
+  const i = (+arg + L.length) % L.length, t = L[i];
+  const d = screen("Study · Trend charts", (i + 1) + " / " + L.length,
+    '<p class="eyebrow">Trend chart ' + (i + 1) + " / " + L.length + "</p><h1>" + esc(t.title) + "</h1>" +
+    '<div class="st-flash"><p class="st-qs">' + esc(t.q) + ' Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p>' +
+    '<p class="st-hint">Use this phrase: <b>' + esc(t.key) + "</b> · Aim for an introduction, an overview and 2–3 detail sentences (about 100–150 words).</p>" +
+    '<div class="st-chartbox">' + chartSvg(t) + "</div>" +
+    "<details><summary>Show the exact figures</summary>" + tTable(t) + "</details>" +
+    '<textarea class="st-ta" rows="9" placeholder="Write your answer here">' + esc(done[i] ? done[i].text : "") + '</textarea><p class="st-wc">0 words</p>' +
+    '<div class="btnrow"><button type="button" class="st-chk">Check with Claude</button><button type="button" class="ghost st-mod">Show the Band 9 model</button></div><div class="st-out"></div>' +
+    '<div class="btnrow"><button type="button" class="ghost" data-go="trends" data-arg="' + (i - 1) + '">← Previous chart</button><button type="button" class="ghost" data-go="trends" data-arg="">All 20 charts</button><button type="button" data-go="trends" data-arg="' + (i + 1) + '">Next chart →</button></div></div>' + nav());
+  const ta = d.querySelector(".st-ta"), out = d.querySelector(".st-out"), wc = d.querySelector(".st-wc");
+  const count = () => { const k = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0; wc.textContent = k + " words"; };
+  ta.oninput = count; count();
+  const model = '<div class="st-better"><span>Band 9 model</span>' + tModel(t) + "</div>";
+  const keep = () => { const v = ta.value.trim(); if (v && (!done[i] || done[i].text !== v)) { addHist({ kind: "trend", q: i, text: v }); done[i] = { text: v }; } };
+  d.querySelector(".st-mod").onclick = () => { keep(); out.innerHTML = model; };
+  d.querySelector(".st-chk").onclick = () => {
+    const v = ta.value.trim(); if (!v) { ta.focus(); return; }
+    keep();
+    out.innerHTML = '<p class="st-hint">Claude is checking against the band descriptors…</p>';
+    const data = t.series.map(s => s.name + ": " + t.x.map((x, k) => x + " " + tfmt(s.v[k])).join(", ")).join("\n");
+    sampler().then(s => {
+      if (!s) { out.innerHTML = '<p class="st-hint">Claude isn\'t available here.</p>' + model; return; }
+      return s.json("You are a strict, experienced IELTS Academic Writing examiner. The student (aiming for Band 9) wrote a short Task 1 answer (introduction, overview and key details) for this " + (t.type === "bar" ? "bar chart" : "line graph") + ":\n" + t.q + "\nUnit: " + t.unit + "\nData:\n" + data +
+        "\nThey were asked to use the phrase \"" + t.key + "\".\n\nStudent's text:\n\"\"\"" + v + "\"\"\"\n\nFor reference, a Band 9 answer: " + t.model +
+        '\n\nCheck every figure against the data. Judge task achievement (overview, accuracy, key features), coherence, vocabulary and grammar. Reply with JSON only: {"band": <estimated band, whole or half>, "comment": "two short sentences: the main strength and the single most important improvement", "good": ["up to 2 strengths, quoting the student"], "fixes": [{"wrong": "exact words", "right": "correction", "why": "short rule"}] (every error, including wrong figures, up to 10), "better": "the student\'s text rewritten at Band 9, keeping their ideas"}')
+        .then(r => {
+          out.innerHTML = '<p class="st-verdict">About Band ' + esc(r.band) + "</p><p>" + esc(r.comment || "") + "</p>" +
+            (r.good && r.good.length ? "<ul>" + r.good.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "") +
+            (r.fixes && r.fixes.length ? '<div class="st-fixes">' + r.fixes.map(f => "<div><s>" + esc(f.wrong) + "</s> → <ins>" + esc(f.right) + "</ins><span>" + esc(f.why) + "</span></div>").join("") + "</div>" : "") +
+            (r.better ? '<p class="st-better"><span>Your text at Band 9</span>' + esc(r.better) + "</p>" : "") + model;
+          addHist({ kind: "trend", q: i, text: v, band: r.band });
+        });
+    }).catch(e => { out.innerHTML = '<p class="st-hint">' + errText(e) + "</p>" + model; });
+  };
+}
+
+const ROUTES = { home, fam, saved, cards, quiz, mixquiz: () => quiz(""), use, t1, t2, rules, practice, trends };
 
 function css() {
   if (byId("stCss")) return;
@@ -391,6 +479,15 @@ function css() {
 .stdy .st-wc{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);text-align:right;margin:0}
 .stdy .st-verdict{font-weight:600;font-size:1.05rem;color:var(--accent);margin:12px 0 4px}.stdy .st-verdict.ok{color:var(--good)}
 .stdy .st-fixes>div{margin:0 0 8px;font-size:.92rem}.stdy .st-fixes s{color:var(--correct)}.stdy .st-fixes ins{text-decoration:none;color:var(--good);font-weight:600}.stdy .st-fixes span{display:block;font-size:.84rem;color:var(--ink-3)}
+.stdy .st-chartbox{background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:8px;margin:12px 0}
+.stdy .st-chart{width:100%;height:auto;display:block}
+.stdy .st-chart .ct-t{font:600 15px "IBM Plex Sans",sans-serif;fill:var(--ink)}
+.stdy .st-chart .ct-u,.stdy .st-chart .ct-a{font:11.5px "IBM Plex Sans",sans-serif;fill:var(--ink-3)}
+.stdy .st-chart .ct-l{font:12px "IBM Plex Sans",sans-serif;fill:var(--ink-2)}
+.stdy .st-chart .ct-g{stroke:var(--rule);stroke-width:1}
+.stdy .st-chart .ct-x{stroke:var(--ink-3);stroke-width:1.2}
+.stdy .st-better p{margin:0 0 .6em}.stdy .st-better p:last-child{margin:0}
+.stdy details summary{cursor:pointer;color:var(--accent);font-size:.92rem;margin:4px 0}
 .stdy .st-better{border:1px solid var(--good);background:var(--good-soft);border-radius:5px;padding:10px 14px;font-family:"Newsreader",Georgia,serif;font-size:1.03rem;line-height:1.55;color:var(--ink);max-width:760px}
 .stdy .st-better span{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--good);margin-bottom:4px}
 .stdy .st-step{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:0 0 12px;max-width:820px}
