@@ -401,7 +401,7 @@ function home(){
   var weakest=SETS.filter(function(s){return qs.some(function(a){return a.set===s.id})}).map(function(s){var h=qs.filter(function(a){return a.set===s.id});
     return [s,h.reduce(function(t,a){return t+a.score/a.max},0)/h.length]}).sort(function(a,b){return a[1]-b[1]})[0];
   var tp=qs.map(function(a){var s=SETS.filter(function(x){return x.id===a.set})[0];return {band:null,score:a.score,max:a.max,label:(s?s.name:"")+" "+a.mode}});
-  var h='<header class="top"><div class="wrap"><div class="brand"><button class="cbtn" id="toSim">← Menu</button><span class="tag">Vocabulary</span><b>IELTS Vocabulary</b></div>'+
+  var h='<header class="top"><div class="wrap"><div class="brand"><button class="cbtn" id="toSim">← Home</button><span class="tag">Vocabulary</span><b>IELTS Vocabulary</b></div>'+
     '<span class="clock tab">'+known+' / '+TOTAL+' mastered</span></div></header>'+
     '<main class="wrap"><section class="hero"><h1>Build the vocabulary the test rewards</h1>'+
     '<p>'+TOTAL+' words and phrases in '+SETS.length+' sets, grouped by what you need them for. Open a section, then learn a set with flashcards, test yourself with a meaning quiz, and practise spelling.</p></section>'+

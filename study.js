@@ -70,7 +70,7 @@ function screen(title, sub, html) {
   return d;
 }
 const nav = (extra) => '<div class="st-nav"><button type="button" class="ghost" data-go="home">← Study home</button>' + (extra || "") +
-  '<button type="button" class="ghost" data-go="menu">Back to menu</button></div>';
+  '<button type="button" class="ghost" data-go="menu">Home</button></div>';
 function common(e) {
   const g = e.target.closest("[data-go]");
   if (g) { const v = g.dataset.go; if (v === "menu") { H().home && H().home(); return; } if (ROUTES[v]) ROUTES[v](g.dataset.arg); return; }
