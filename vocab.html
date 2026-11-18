@@ -249,12 +249,12 @@ table.res tr.jump:hover td{background:var(--surface-2)}
 .lexd b{display:block;margin-bottom:4px}
 .vnav{position:sticky;top:0;z-index:5;background:var(--ground,var(--surface));padding:10px 0 12px;margin:14px 0 8px;border-bottom:1px solid var(--rule)}.vchips{display:flex;flex-wrap:wrap;gap:6px}.vchip{font:inherit;font-size:.86rem;display:flex;gap:8px;align-items:baseline;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}.vchip:hover{border-color:var(--accent)}.vchip b{font-weight:600}.vchip span{font-family:var(--mono);font-size:11px;color:var(--ink-3)}.vsearch{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:.88rem;color:var(--ink-2)}.vsearch input{font:inherit;flex:1;max-width:420px;border:1px solid var(--rule);border-radius:6px;padding:7px 10px;background:var(--surface);color:var(--ink)}.vhit{margin:6px 0 0;font-size:.86rem;color:var(--ink-2)}.group details>summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:baseline;padding:10px 4px;border-bottom:1px solid var(--rule)}.group details>summary::-webkit-details-marker{display:none}.group details>summary h2::before{content:'\25B8  ';color:var(--accent)}.group details[open]>summary h2::before{content:'\25BE  '}.group details>summary h2{margin:0}.gprog{font-family:var(--mono);font-size:12px;color:var(--ink-3);white-space:nowrap}.gbar{grid-column:1/-1;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden}.gbar i{display:block;height:100%;background:var(--good)}.group details[open]>.gsub{margin-top:10px}.vhist{margin:0 0 22px}.vhist>summary{cursor:pointer;font-weight:600;padding:10px 4px;color:var(--accent)}.svb{font:inherit;font-size:.82rem;font-weight:600;border:1px solid var(--gold,#8A6414);background:transparent;color:var(--gold,#8A6414);border-radius:14px;padding:3px 11px;cursor:pointer;white-space:nowrap}.svb.on{background:var(--gold,#8A6414);color:var(--surface,#fff)}.svrow{display:flex;justify-content:flex-end}.reslist li .svb{margin-left:auto;align-self:center}.svcard{border:1.5px solid var(--gold,#8A6414);border-radius:8px;padding:14px 16px;margin:16px 0;background:var(--gold-soft,#F7EFDB)}.svcard .sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.svcard .sh b{font-size:1.1rem}.svcard p{margin:6px 0 10px}/*DSKIN-START*/
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
-  --ground:#F3F4F6;--surface:#FFFFFF;--surface-2:#F6F7F9;--surface-3:#EDEFF2;--ink:#14161A;--ink-2:#4A4F57;--ink-3:#8B9099;
-  --rule:#E7E9ED;--rule-strong:#D5D9DF;--accent:#14161A;--accent-2:#3A4049;--accent-soft:#EEF0F3;
-  --good:#2F6B5A;--good-soft:#E7F1EC;--gold:#8A6A1E;--gold-soft:#F6F0E2;--bad:#A3412F;--bad-soft:#F8EAE6;
-  --chrome:#FFFFFF;--chrome-2:#F3F4F6;--chrome-ink:#14161A;--chrome-ink-2:#8B9099;--mark:#FBF1C7;
-  --shadow:0 1px 2px rgba(20,22,26,.04),0 10px 30px -18px rgba(20,22,26,.18)}
-.top{background:#fff;color:var(--ink);border-bottom:1px solid var(--rule)}
+  --ground:#EDE5D5;--surface:#FBF8F2;--surface-2:#F4EEE3;--surface-3:#EBE3D4;--ink:#2A2622;--ink-2:#5A5249;--ink-3:#8C8274;
+  --rule:#E8DFCF;--rule-strong:#D8CCB6;--accent:#2A2622;--accent-2:#463F38;--accent-soft:#F1EADC;
+  --good:#3E5B4F;--good-soft:#E3E9DF;--gold:#9A7440;--gold-soft:#EFE4D0;--bad:#B4573C;--bad-soft:#F2DFD6;
+  --chrome:#FBF8F2;--chrome-2:#F4EEE3;--chrome-ink:#2A2622;--chrome-ink-2:#8C8274;--mark:#F3E3C4;
+  --shadow:0 1px 2px rgba(60,50,20,.05),0 12px 30px -18px rgba(60,50,20,.25)}
+.top{color:var(--ink);border-bottom:1px solid var(--rule)}
 .cbtn{background:var(--surface-2);color:var(--ink);border:0;box-shadow:inset 0 0 0 1px var(--rule);border-radius:999px;padding:7px 14px;font-weight:500}
 .cbtn:hover{background:var(--surface-3)}
 .cbtn[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:none}
@@ -274,7 +274,12 @@ table.res tr.jump:hover td{background:var(--surface-2)}
 .pbtn{background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px}
 .gbtn{border-radius:999px;border-color:var(--rule-strong)}
 .pill{border-radius:999px}
-.instr{background:#fff}
+.top{background:var(--surface)}
+.stat{border:0;border-radius:20px}
+.stats .stat:nth-child(4n+1){background:#E9DFCC}.stats .stat:nth-child(4n+2){background:#EFE4D0}
+.stats .stat:nth-child(4n+3){background:#F2DFD6}.stats .stat:nth-child(4n+4){background:#E3E9DF}
+.svcard{background:#FFFDF9!important}
+.instr{background:var(--surface)}
 }
 /*DSKIN-END*/
 </style>
