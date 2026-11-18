@@ -641,6 +641,8 @@ table.bt thead th[data-m="writing"]{color:#9A4A30}table.bt thead th[data-m="spea
   <div class="botbar" id="botbar" style="display:none"></div>
 </div>
 <script>window.IELTS_STUDY_BRIDGE={home:function(){location.href='index.html'},stopTimer:function(){}};</script>
+<script src="progress.js?v=f95c5e69"></script>
+<script>(function(){var S=window.IELTS_SYNC;if(!S)return;function g(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}function p(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}function mk(a,b){for(var x in b||{})if((b[x]||0)>(a[x]||0))a[x]=b[x];return a}function ms(a,b){for(var x in b||{})if(!(x in a)||Math.abs(b[x])>Math.abs(a[x]))a[x]=b[x];return a}function mh(a,b,del){var seen={};a.forEach(function(h){if(h&&h.id)seen[h.id]=1});(b||[]).forEach(function(h){if(h&&h.id&&!seen[h.id]&&del.indexOf(h.id)<0){seen[h.id]=1;a.push(h)}});return a}var applied=g("sync.applied","");if(applied===S.at+"|"+(S.hist||[]).length+"|"+JSON.stringify(S.study||{}).length)return;p("vc.known",mk(g("vc.known",{}),S.known));p("vc.saved",ms(g("vc.saved",{}),S.saved));p("vc.hist",mh(g("vc.hist",[]),S.hist,g("vc.hist.deleted",[])));var st=g("st.state",{});st.known=mk(st.known||{},(S.study||{}).known);st.saved=ms(st.saved||{},(S.study||{}).saved);st.hist=mh(st.hist||[],(S.study||{}).hist,[]);st.hist.sort(function(x,y){return (x.at||0)-(y.at||0)});p("st.state",st);p("sync.applied",S.at+"|"+(S.hist||[]).length+"|"+JSON.stringify(S.study||{}).length)})();</script>
 <script src="study-data.js?v=c53a7d9c"></script>
 <script src="study.js?v=c53a7d9c"></script>
 <script>if(window.STUDY)window.STUDY.open();</script>

@@ -29,6 +29,8 @@ a.card.v{background:#E3E9DF}a.card.v i{background:#3E5B4F}a.card.v b{color:#2F4A
 a.card.w{background:#F2DFD6}a.card.w i{background:#C8775A}a.card.w b{color:#8A3F25}a.card.w span{color:#9A5A44}
 .off{border-radius:14px;padding:12px 16px;background:#EFE4D0;color:#7A5A2B;font-size:.95rem}
 .off.ok{background:var(--good-soft);color:var(--good)}
+.sync{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:14px 0;padding:16px 18px;border-radius:18px;background:#E7E5EE;color:#4F4B68}.sync div{flex:1;min-width:220px}.sync b{display:block;margin-bottom:3px}.sync span{font-size:.9rem;line-height:1.45}
+.sync button{font:inherit;font-weight:600;border:0;border-radius:999px;padding:11px 18px;background:#6E6A86;color:#fff;cursor:pointer}
 @media (prefers-color-scheme:dark){main{background:var(--surface)}a.card b,a.card span{color:#1B1A17}.off{color:#1B1A17}}
 </style>
 </head>
@@ -40,6 +42,18 @@ a.card.w{background:#F2DFD6}a.card.w i{background:#C8775A}a.card.w b{color:#8A3F
 <a class="card w" href="study.html"><i>W</i><b>Writing</b><span>Task 1 and Task 2 guides, 20 trend charts with Band 9 answers, grammar of trends.</span></a>
 </div>
 <div class="off" id="off">Checking offline storage…</div>
+<div class="sync"><div><b>Sync with your Mac</b><span>Your Mac and Claude-link progress comes in automatically each time the site updates. To send this iPad's progress back, tap the button and AirDrop the file to your Mac, then tell Claude "sync all three".</span></div><button type="button" id="sendp">Send progress to Mac</button></div>
+<script>
+document.getElementById('sendp').onclick=function(){
+ function g(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+ var data={from:"ipad",at:new Date().toISOString(),known:g("vc.known",{}),saved:g("vc.saved",{}),hist:g("vc.hist",[]),deleted:g("vc.hist.deleted",[]),study:g("st.state",{})};
+ var d=new Date(),pad=function(n){return ("0"+n).slice(-2)};
+ var name="ielts-ipad-progress-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes())+".json";
+ var blob=new Blob([JSON.stringify(data)],{type:"application/json"}),file=new File([blob],name,{type:"application/json"});
+ if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:"IELTS iPad progress"}).catch(function(){});return}
+ var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+};
+</script>
 <p style="font-size:.85rem">Your progress is saved on this iPad. Claude's checking (Write a paragraph) needs internet and the Mac version.</p>
 <script>
 (function(){var o=document.getElementById('off');
