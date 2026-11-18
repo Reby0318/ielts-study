@@ -69,7 +69,7 @@ function screen(title, sub, html) {
   d.addEventListener("click", common);
   return d;
 }
-const nav = (extra) => '<div class="st-nav"><button type="button" class="ghost" data-go="home">← Study home</button>' + (extra || "") +
+const nav = (extra) => '<div class="st-nav"><button type="button" class="ghost" data-go="home">← Writing home</button>' + (extra || "") +
   '<button type="button" class="ghost" data-go="menu">Home</button></div>';
 function common(e) {
   const g = e.target.closest("[data-go]");
@@ -100,26 +100,22 @@ function wordRow(w, showFam) {
 
 /* ---------- home ---------- */
 function home() {
-  const sv = savedKeys().length, total = WORDS.length, m = mastered(WORDS);
-  const last = ST.hist.filter(h => h.kind === "quiz").slice(-1)[0];
-  const d = screen("Study", "Vocabulary and Writing",
-    '<p class="eyebrow">Study</p><h1>Vocabulary and Writing</h1>' +
-    '<div class="tiles"><div class="tile"><span class="lab">Words mastered</span><span class="v">' + m + '<span style="font-size:1rem;color:var(--ink-3)"> / ' + total + '</span></span><span class="s">"Knew it" in flashcards or right in a quiz</span></div>' +
-    '<div class="tile"><span class="lab">My saved words</span><span class="v" id="stSavedN">' + sv + '</span><span class="s">Marked ☆ for recap</span></div>' +
-    '<div class="tile"><span class="lab">Last quiz</span><span class="v">' + (last ? last.score + "/" + last.n : "–") + '</span><span class="s">' + (last ? esc(last.title) : "Take one below") + "</span></div></div>" +
-    '<div class="cards"><button type="button" class="card" data-go="saved"><b>⭐ My saved words</b><span>Every word you marked, with flashcards and a quiz for a quick recap.</span><span class="meta">' + sv + " saved</span></button>" +
-    '<button type="button" class="card" data-go="mixquiz"><b>Mixed quiz</b><span>10 questions from all the words. Wrong answers can go straight into your saved words.</span><span class="meta">About 5 minutes</span></button>' +
-    '<button type="button" class="card" data-go="trends"><b>📈 Trend charts</b><span>20 graphs to describe, one for each trend phrase, each with a Band 9 model answer.</span><span class="meta">Task 1 · works offline</span></button>' +
-    '<button type="button" class="card" data-go="t1"><b>Task 1 guide</b><span>Structure, the overview, every chart type, a Band 9 model and a checklist.</span><span class="meta">Writing</span></button>' +
-    '<button type="button" class="card" data-go="t2"><b>Task 2 guide</b><span>Five essay types, paragraph plan, linkers, Band 9 grammar and a model essay.</span><span class="meta">Writing</span></button>' +
-    '<button type="button" class="card" data-go="practice"><b>Writing practice</b><span>Write an overview, a data sentence, an introduction or a body paragraph. Claude checks it.</span><span class="meta">With Claude</span></button>' +
-    '<button type="button" class="card" data-go="rules"><b>Grammar of trends</b><span>to vs by, a rise in, the number of, tenses: the small rules that cost Task 1 marks.</span><span class="meta">Task 1</span></button></div>' +
-    '<p class="st-legend">' + tag("B") + " fine in both " + tag("W") + " best in essays " + tag("S") + " too informal for essays " + tag("X") + " know it, but avoid it</p>" +
-    TOPICS.map(t => "<h2>" + esc(t) + '</h2><div class="cards st-fams">' + STUDY_VOCAB.filter(f => f.topic === t).map(f => {
-      const ws = WORDS.filter(w => w.fam === f);
-      return '<button type="button" class="card" data-go="fam" data-arg="' + f.id + '"><b>' + esc(f.head) + "</b><span>" + esc(ws.slice(0, 5).map(w => w.w).join(", ")) + "…</span>" +
-        '<span class="meta">' + mastered(ws) + " / " + ws.length + " mastered</span></button>";
-    }).join("") + "</div>").join("") + nav());
+  /* Writing only: every word list lives in Vocabulary (the word families moved there on 18 Nov). */
+  const t = ST.hist.filter(h => h.kind === "trend"), pr = ST.hist.filter(h => h.kind === "practice");
+  const tDone = {}; t.forEach(h => { tDone[h.q] = 1 });
+  const d = screen("Writing", "Guides, model answers and practice",
+    '<p class="eyebrow">Writing</p><h1>Writing</h1>' +
+    '<p class="st-hint" style="max-width:62ch">Guides, Band 9 model answers and practice for Task 1 and Task 2. For words and phrases, use <b>Vocabulary</b> in the top bar.</p>' +
+    '<div class="tiles"><div class="tile"><span class="lab">Trend charts written</span><span class="v">' + Object.keys(tDone).length + '<span style="font-size:1rem;color:var(--ink-3)"> / ' + STUDY_TRENDS.length + '</span></span><span class="s">Task 1 graphs you answered</span></div>' +
+    '<div class="tile"><span class="lab">Paragraphs checked</span><span class="v">' + pr.length + '</span><span class="s">Write a paragraph, checked by Claude</span></div></div>' +
+    "<h2>Task 1</h2>" +
+    '<div class="cards"><button type="button" class="card" data-go="t1"><b>Task 1 guide</b><span>Structure, the overview, every chart type, a Band 9 model and a checklist.</span></button>' +
+    '<button type="button" class="card" data-go="trends"><b>Trend charts</b><span>20 graphs to describe, each with a Band 9 model answer.</span><span class="meta">' + Object.keys(tDone).length + " / " + STUDY_TRENDS.length + ' written</span></button>' +
+    '<button type="button" class="card" data-go="rules"><b>Grammar of trends</b><span>to vs by, a rise in, the number of, tenses: the small rules that cost marks.</span></button></div>' +
+    "<h2>Task 2</h2>" +
+    '<div class="cards"><button type="button" class="card" data-go="t2"><b>Task 2 guide</b><span>Five essay types, paragraph plan, linkers, Band 9 grammar and a model essay.</span></button>' +
+    '<button type="button" class="card" data-go="practice" data-arg="intro"><b>Write a paragraph</b><span>An overview, a data sentence, an introduction or a body paragraph. Claude checks it.</span><span class="meta">Needs internet</span></button></div>' +
+    nav());
   return d;
 }
 
@@ -127,7 +123,7 @@ function home() {
 function fam(id) {
   const f = STUDY_VOCAB.find(x => x.id === id); if (!f) return home();
   const ws = WORDS.filter(w => w.fam === f);
-  screen("Study · " + esc(f.head), f.topic + " · " + ws.length + " words",
+  screen("Writing · " + esc(f.head), f.topic + " · " + ws.length + " words",
     '<p class="eyebrow">' + esc(f.topic) + "</p><h1>Instead of “" + esc(f.head) + "”</h1>" +
     '<div class="btnrow"><button type="button" data-go="cards" data-arg="fam:' + f.id + '">Flashcards</button><button type="button" data-go="quiz" data-arg="fam:' + f.id + '">Quiz</button><button type="button" class="ghost" data-go="use" data-arg="fam:' + f.id + '">Use a word with Claude</button></div>' +
     f.groups.map(g => "<h2>" + esc(g.label) + "</h2>" + WORDS.filter(w => w.fam === f && w.group === g.label).map(w => wordRow(w)).join("")).join("") + nav());
@@ -136,7 +132,7 @@ function fam(id) {
 /* ---------- saved words ---------- */
 function saved() {
   const ks = savedKeys();
-  screen("Study · My saved words", ks.length + " words",
+  screen("Writing · My saved words", ks.length + " words",
     '<p class="eyebrow">Recap</p><h1>My saved words</h1>' +
     (ks.length ? '<p>Newest first. Tap ★ Saved to remove a word once you know it.</p><div class="btnrow"><button type="button" data-go="cards" data-arg="saved">Flashcards</button><button type="button" data-go="quiz" data-arg="saved">Quiz</button><button type="button" class="ghost" data-go="use" data-arg="saved">Use a word with Claude</button></div>' +
       ks.map(k => wordRow(byKey(k), true)).join("")
@@ -158,7 +154,7 @@ function cards(arg) {
   const list = shuffle(listFor(arg)).sort((a, b) => (ST.known[a.key] === 2) - (ST.known[b.key] === 2));
   if (!list.length) return saved();
   let i = 0, knew = 0;
-  const d = screen("Study · Flashcards", titleFor(arg), '<p class="eyebrow">Flashcards · ' + esc(titleFor(arg)) + '</p><div id="stCard"></div>' + nav('<button type="button" class="ghost" data-go="' + (arg === "saved" ? "saved" : "fam") + '" data-arg="' + esc((arg || "").replace("fam:", "")) + '">Word list</button>'));
+  const d = screen("Writing · Flashcards", titleFor(arg), '<p class="eyebrow">Flashcards · ' + esc(titleFor(arg)) + '</p><div id="stCard"></div>' + nav('<button type="button" class="ghost" data-go="' + (arg === "saved" ? "saved" : "fam") + '" data-arg="' + esc((arg || "").replace("fam:", "")) + '">Word list</button>'));
   const host = d.querySelector("#stCard");
   function show() {
     if (i >= list.length) {
@@ -193,7 +189,7 @@ function quiz(arg) {
   });
   let i = 0, score = 0;
   const wrong = [];
-  const d = screen("Study · Quiz", titleFor(arg), '<p class="eyebrow">Quiz · ' + esc(titleFor(arg)) + '</p><div id="stQ"></div>' + nav());
+  const d = screen("Writing · Quiz", titleFor(arg), '<p class="eyebrow">Quiz · ' + esc(titleFor(arg)) + '</p><div id="stQ"></div>' + nav());
   const host = d.querySelector("#stQ");
   function show() {
     if (i >= qs.length) {
@@ -240,7 +236,7 @@ function use(arg) {
   const list = listFor(arg);
   if (!list.length) return saved();
   let w = list[Math.floor(Math.random() * list.length)];
-  const d = screen("Study · Use it", titleFor(arg),
+  const d = screen("Writing · Use it", titleFor(arg),
     '<p class="eyebrow">Use it · ' + esc(titleFor(arg)) + '</p><h1>Write your own sentence</h1><div id="stUse"></div>' + nav());
   const host = d.querySelector("#stUse");
   function show() {
@@ -277,7 +273,7 @@ function use(arg) {
 const paras = t => esc(t).split(/\n\s*\n/).map(p => "<p>" + p + "</p>").join("");
 function t1() {
   const g = STUDY_GUIDE.t1, m = g.model;
-  screen("Study · Task 1 guide", "Report the main features in 20 minutes",
+  screen("Writing · Task 1 guide", "Report the main features in 20 minutes",
     '<p class="eyebrow">Writing · Task 1</p><h1>' + esc(g.title) + "</h1><p>" + esc(g.intro) + "</p>" +
     "<h2>The four paragraphs</h2>" + g.structure.map(s => '<div class="st-step"><b>' + esc(s[0]) + "</b><p>" + esc(s[1]) + '</p><p class="st-ex">' + esc(s[2]) + "</p></div>").join("") +
     "<h2>Every chart type</h2>" + '<div class="tw"><table class="dtable"><thead><tr><th>Type</th><th>What to report</th><th>Overview example</th></tr></thead><tbody>' +
@@ -291,7 +287,7 @@ function t1() {
 }
 function t2() {
   const g = STUDY_GUIDE.t2, m = g.model;
-  screen("Study · Task 2 guide", "A clear, developed argument in 40 minutes",
+  screen("Writing · Task 2 guide", "A clear, developed argument in 40 minutes",
     '<p class="eyebrow">Writing · Task 2</p><h1>' + esc(g.title) + "</h1><p>" + esc(g.intro) + "</p>" +
     "<h2>Five question types</h2>" + g.types.map(t => '<div class="st-step"><b>' + esc(t[0]) + '</b> <span class="st-note">“' + esc(t[1]) + "”</span><p>" + esc(t[2]) + '</p><p class="st-ex">' + esc(t[3]) + "</p></div>").join("") +
     "<h2>Every body paragraph</h2>" + '<div class="st-peel">' + g.paragraph.map((p, i) => '<div><span class="lab">' + (i + 1) + " · " + esc(p[0]) + "</span><p>" + esc(p[1]) + '</p><p class="st-ex">' + esc(p[2]) + "</p></div>").join("") + "</div>" +
@@ -304,7 +300,7 @@ function t2() {
     '<div class="btnrow"><button type="button" data-go="practice" data-arg="intro">Practise an introduction</button><button type="button" class="ghost" data-go="practice" data-arg="body">Practise a body paragraph</button></div>' + nav());
 }
 function rules() {
-  screen("Study · Grammar of trends", "Task 1",
+  screen("Writing · Grammar of trends", "Task 1",
     '<p class="eyebrow">Task 1</p><h1>Grammar of trends</h1>' +
     STUDY_T1_RULES.map(r => '<div class="st-step"><b>' + r[0] + "</b><p>" + r[1] + '</p><p class="st-ex">' + esc(r[2]) + "</p></div>").join("") +
     "<h2>Chart vocabulary</h2>" + '<div class="cards st-fams">' + STUDY_VOCAB.filter(f => f.pos === "chart").map(f => '<button type="button" class="card" data-go="fam" data-arg="' + f.id + '"><b>' + esc(f.head) + "</b><span>" + esc(WORDS.filter(w => w.fam === f).slice(0, 4).map(w => w.w).join(", ")) + "…</span></button>").join("") + "</div>" +
@@ -318,7 +314,7 @@ function practice(kind) {
   kind = PKIND[kind] ? kind : "overview";
   const items = STUDY_PRACTICE[kind];
   let n = Math.floor(Math.random() * items.length);
-  const d = screen("Study · Writing practice", PKIND[kind][0],
+  const d = screen("Writing · Writing practice", PKIND[kind][0],
     '<p class="eyebrow">Writing practice</p><h1>' + esc(PKIND[kind][0]) + "</h1>" +
     '<div class="fltbar">' + Object.keys(PKIND).map(k => '<button type="button" class="' + (k === kind ? "on" : "") + '" data-go="practice" data-arg="' + k + '">' + esc(PKIND[k][0]) + "</button>").join("") + "</div>" +
     '<div id="stP"></div>' + nav());
@@ -398,7 +394,7 @@ const tDone = () => { const d = {}; ST.hist.forEach(h => { if (h.kind === "trend
 function trends(arg) {
   const L = STUDY_TRENDS, done = tDone();
   if (arg === "all") {
-    screen("Study · Trend charts", "All 20 with answers",
+    screen("Writing · Trend charts", "All 20 with answers",
       '<p class="eyebrow">Task 1</p><h1>All 20 charts with model answers</h1><p class="st-hint">Read each chart, say the overview to yourself, then read the model. The trend phrase is in bold.</p>' +
       L.map((t, i) => '<div class="st-flash"><p class="eyebrow">' + (i + 1) + " / " + L.length + " · " + esc(t.key) + '</p><p class="st-qs">' + esc(t.q) + '</p><div class="st-chartbox">' + chartSvg(t) +
         '</div><div class="st-better"><span>Band 9 model answer</span>' + tModel(t) + "</div></div>").join("") +
@@ -406,13 +402,13 @@ function trends(arg) {
     return;
   }
   if (arg == null || arg === "" || isNaN(+arg)) {
-    screen("Study · Trend charts", "Task 1",
+    screen("Writing · Trend charts", "Task 1",
       '<p class="eyebrow">Task 1</p><h1>Trend charts</h1><div class="btnrow"><button type="button" data-go="trends" data-arg="all">📖 Read all 20 with answers</button></div><p class="st-hint">Or pick one chart to practise: 20 graphs, one for each trend phrase. Look at the chart, write the answer (an introduction, an overview and the key details), then compare it with the Band 9 model. The charts and models work offline; "Check with Claude" needs the internet.</p>' +
       '<div class="cards st-fams">' + L.map((t, i) => '<button type="button" class="card" data-go="trends" data-arg="' + i + '"><b>' + (i + 1) + ". " + esc(t.title) + "</b><span>Key phrase: " + esc(t.key) + '</span><span class="meta">' + (t.type === "bar" ? "Bar chart" : "Line graph") + (done[i] ? " · ✓ written" : "") + "</span></button>").join("") + "</div>" + nav());
     return;
   }
   const i = (+arg + L.length) % L.length, t = L[i];
-  const d = screen("Study · Trend charts", (i + 1) + " / " + L.length,
+  const d = screen("Writing · Trend charts", (i + 1) + " / " + L.length,
     '<p class="eyebrow">Trend chart ' + (i + 1) + " / " + L.length + "</p><h1>" + esc(t.title) + "</h1>" +
     '<div class="st-flash"><p class="st-qs">' + esc(t.q) + ' Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p>' +
     '<p class="st-hint">Use this phrase: <b>' + esc(t.key) + "</b> · Aim for an introduction, an overview and 2–3 detail sentences (about 100–150 words).</p>" +
